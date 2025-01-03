@@ -55,7 +55,7 @@ multipython = 'virtualenv_multipython.discover:Multipython'
 #Documentation = "https://multipython.readthedocs.io"
 Repository = "https://github.com/makukha/virtualenv-multipython"
 Issues = "https://github.com/makukha/virtualenv-multipython/issues"
-Changelog = "https://github.com/makukha/virtualenv-multipython/tree/main/src/CHANGELOG.md"
+Changelog = "https://github.com/makukha/virtualenv-multipython/tree/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]
@@ -64,7 +64,7 @@ build-backend = "hatchling.build"
 # bump-my-version
 
 [tool.bumpversion]
-current_version = "0.1.1"
+current_version = "0.1.2"
 allow_dirty = true
 files = [
   {filename = "README.md"},
