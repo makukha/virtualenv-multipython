@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file. Changes for
 
 <!-- towncrier release notes start -->
 
+## [v0.1.2](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.1.2) — 2025-01-04
+
+### Misc
+
+- Fix docs and metadata — by @makukha ([#3](https://github.com/makukha/virtualenv-multipython/issues/3))
+
+
 ## [v0.1.1](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.1.1) — 2025-01-04
 
 ### Misc
