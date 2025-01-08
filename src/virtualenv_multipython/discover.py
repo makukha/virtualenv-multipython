@@ -1,12 +1,17 @@
 from pathlib import Path
 import re
+from typing import TYPE_CHECKING
 
-from virtualenv.discovery.builtin import Builtin
-from virtualenv.discovery.discover import Discover
-from virtualenv.discovery.py_info import PythonInfo
+# ruff: noqa: F401
+if TYPE_CHECKING:
+    import argparse  # type: ignore[unused-ignore]
+
+from virtualenv.discovery.builtin import Builtin  # type: ignore
+from virtualenv.discovery.discover import Discover  # type: ignore
+from virtualenv.discovery.py_info import PythonInfo  # type: ignore
 
 
-PATH_ROOT = Path('/usr/local/bin')
+MULTIPYTHON_PATH_ROOT = Path('/usr/local/bin')
 
 RX = (
     re.compile(r'(?P<impl>py)(?P<maj>[23])(?P<min>[0-9][0-9]?)'),
@@ -14,21 +19,24 @@ RX = (
 )
 
 
-class Multipython(Discover):
-    def __init__(self, options) -> None:
+class Multipython(Discover):  # type: ignore[misc]
+    def __init__(self, options):  # type: (argparse.Namespace) -> None
         super().__init__(options)
         self.builtin = Builtin(options)
         self.env = options.env['TOX_ENV_NAME']
 
     @classmethod
-    def add_parser_arguments(cls, parser):
+    def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
         Builtin.add_parser_arguments(parser)
 
-    def run(self):
+    def run(self):  # type: () -> PythonInfo | None
         for rx in RX:
             if match := rx.fullmatch(self.env):
                 g = match.groupdict()
                 name = {'py': 'python'}[g['impl']]
                 command = f'{name}{g['maj']}.{g['min']}{g.get('suffix', '')}'
-                return PythonInfo.from_exe(str(PATH_ROOT / command), resolve_to_host=False)
+                return PythonInfo.from_exe(
+                    str(MULTIPYTHON_PATH_ROOT / command),
+                    resolve_to_host=False,
+                )
         return self.builtin.run()
