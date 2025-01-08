@@ -26,8 +26,11 @@ More env names may be added in the future.
 > * There is no fallback to tox python is not executed.
 > * This strict behaviour makes interpreter availability errors explicit.
 
+# Testing
 
-## Authors
+`virtualenv-multipython` is tested for all Python tags supported by [multipython](https://github.com/makukha/multipython).
+
+# Authors
 
 * [Michael Makukha](https://github.com/makukha)
 

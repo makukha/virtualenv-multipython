@@ -14,7 +14,7 @@ tasks:
       ISSUE: {sh: git rev-parse --abbrev-ref HEAD | cut -d- -f1}
       SECTION: '{{index .MATCH 0}}'
     cmds:
-      - uv run towncrier create -c "{{.CLI_ARGS}}" "{{.ISSUE}}.{{.SECTION}}.md"
+      - uv run towncrier create -c '{{.CLI_ARGS}}' "{{.ISSUE}}.{{.SECTION}}.md"
 
   lint:
     desc: Run linters.
@@ -29,6 +29,11 @@ tasks:
       - uv lock
       - rm -rf dist
       - uv build
+
+  test:
+    desc: Run tests
+    cmds:
+      - docker run --rm -w /test -v .:/test makukha/multipython:unsafe tox run
 
   # --- release
 
