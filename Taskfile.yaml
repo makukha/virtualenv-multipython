@@ -5,13 +5,15 @@ tasks:
   init:
     desc: Init local dev environment.
     cmds:
-      - cmd: uv tool install "{{.ITEM}}"
-        for:
-          - bump-my-version
-          - mypy
-          - ruff
-          - towncrier
+      - uv lock
       - uv sync
+
+  lint:
+    desc: Run linters.
+    cmds:
+      - uv run mypy src
+      - uv run ruff check
+      - uv run ruff format --check
 
   build:
     desc: Build package.
@@ -26,7 +28,7 @@ tasks:
       ISSUE: {sh: git rev-parse --abbrev-ref HEAD | cut -d- -f1}
       SECTION: '{{index .MATCH 0}}'
     cmds:
-      - uvx towncrier create -c "{{.CLI_ARGS}}" "{{.ISSUE}}.{{.SECTION}}.md"
+      - uv run towncrier create -c "{{.CLI_ARGS}}" "{{.ISSUE}}.{{.SECTION}}.md"
 
   release:changelog:
     desc: Collect changelog entries.
@@ -38,7 +40,7 @@ tasks:
   release:version:
     desc: Bump release version.
     cmds:
-      - uvx bump-my-version bump -- {{.CLI_ARGS}}
+      - uv run bump-my-version bump -- {{.CLI_ARGS}}
       - uv lock
 
   release:publish:
