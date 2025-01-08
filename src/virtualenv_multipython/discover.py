@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 # ruff: noqa: F401
 if TYPE_CHECKING:
-    import argparse                                  # type: ignore[unused-ignore]
+    import argparse  # type: ignore[unused-ignore]
 
-from virtualenv.discovery.builtin import Builtin     # type: ignore
-from virtualenv.discovery.discover import Discover   # type: ignore
+from virtualenv.discovery.builtin import Builtin  # type: ignore
+from virtualenv.discovery.discover import Discover  # type: ignore
 from virtualenv.discovery.py_info import PythonInfo  # type: ignore
 
 
@@ -19,8 +19,8 @@ RX = (
 )
 
 
-class Multipython(Discover):                # type: ignore[misc]
-    def __init__(self, options):            # type: (argparse.Namespace) -> None
+class Multipython(Discover):  # type: ignore[misc]
+    def __init__(self, options):  # type: (argparse.Namespace) -> None
         super().__init__(options)
         self.builtin = Builtin(options)
         self.env = options.env['TOX_ENV_NAME']
@@ -29,7 +29,7 @@ class Multipython(Discover):                # type: ignore[misc]
     def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
         Builtin.add_parser_arguments(parser)
 
-    def run(self):                          # type: () -> PythonInfo | None
+    def run(self):  # type: () -> PythonInfo | None
         for rx in RX:
             if match := rx.fullmatch(self.env):
                 g = match.groupdict()
