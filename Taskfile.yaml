@@ -8,6 +8,14 @@ tasks:
       - uv lock
       - uv sync
 
+  news:*:
+    desc: Create news item {added|breaking|changed|deprecated|docs|fixed|misc|removed|security}.
+    vars:
+      ISSUE: {sh: git rev-parse --abbrev-ref HEAD | cut -d- -f1}
+      SECTION: '{{index .MATCH 0}}'
+    cmds:
+      - uv run towncrier create -c "{{.CLI_ARGS}}" "{{.ISSUE}}.{{.SECTION}}.md"
+
   lint:
     desc: Run linters.
     cmds:
@@ -22,13 +30,7 @@ tasks:
       - rm -rf dist
       - uv build
 
-  changelog:*:
-    desc: Create news item {added|breaking|changed|deprecated|docs|fixed|misc|removed|security}.
-    vars:
-      ISSUE: {sh: git rev-parse --abbrev-ref HEAD | cut -d- -f1}
-      SECTION: '{{index .MATCH 0}}'
-    cmds:
-      - uv run towncrier create -c "{{.CLI_ARGS}}" "{{.ISSUE}}.{{.SECTION}}.md"
+  # --- release
 
   release:changelog:
     desc: Collect changelog entries.
