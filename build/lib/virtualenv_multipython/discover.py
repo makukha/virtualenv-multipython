@@ -30,26 +30,17 @@ class Multipython(Discover):  # type: ignore[misc]
         Builtin.add_parser_arguments(parser)
 
     def run(self):  # type: () -> PythonInfo | None
-        match = None
         for rx in RX:
             match = rx.fullmatch(self.env)
             if match is not None:
-                break
-
-        if match is None:
-            return None
-
-        g = match.groupdict()
-        g['suffix'] = g.get('suffix', '')
-        name = {'py': 'python'}[g['impl']]
-        command = '{name}{maj}.{min}{suffix}'.format(name=name, **g)
-
-        try:
-            proposed = PythonInfo.from_exe(
-                str(MULTIPYTHON_PATH_ROOT / command),
-                resolve_to_host=False,
-            )
-        except Exception:
-            proposed = None
-
-        return proposed
+                g = match.groupdict()
+                g['suffix'] = g.get('suffix', '')
+                name = {'py': 'python'}[g['impl']]
+                command = '{name}{maj}.{min}{suffix}'.format(name=name, **g)
+                return PythonInfo.from_exe(
+                    str(MULTIPYTHON_PATH_ROOT / command),
+                    resolve_to_host=False,
+                )
+        info = self.builtin.run()
+        if info is not None:
+            return info

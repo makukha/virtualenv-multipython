@@ -43,9 +43,9 @@ classifiers = [  # see https://pypi.org/classifiers/
   "Topic :: Utilities",
   "Typing :: Typed",
 ]
-requires-python = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3,!=3.4"
+requires-python = ">=3.7"
 dependencies = [
-  "virtualenv",
+  "virtualenv>=20",
 ]
 
 [dependency-groups]
@@ -56,8 +56,8 @@ dev = [
   "towncrier; python_version>='3.13'",
 ]
 
-[project.entry-points.'virtualenv.discovery']
-multipython = 'virtualenv_multipython.discover:Multipython'
+[project.entry-points."virtualenv.discovery"]
+multipython = "virtualenv_multipython.discover:Multipython"
 
 [project.urls]
 #Documentation = "https://multipython.readthedocs.io"

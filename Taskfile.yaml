@@ -32,8 +32,10 @@ tasks:
 
   test:
     desc: Run tests
+    env:
+      BUILDKIT_PROGRESS: plain
     cmds:
-      - docker run --rm -w /test -v .:/test makukha/multipython:unsafe tox run
+      - docker buildx bake -f tests/docker-bake.hcl
 
   # --- release
 
