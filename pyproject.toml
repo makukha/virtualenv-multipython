@@ -3,7 +3,6 @@
 # NOTE: Keep in sync with setup.cfg
 
 name = "virtualenv-multipython"
-version = "0.1.2"
 description = "virtualenv discovery plugin for multipython"
 authors = [
   {name = "Michael Makukha", email = "m.makukha@gmail.com"},
@@ -43,6 +42,9 @@ classifiers = [  # see https://pypi.org/classifiers/
   "Topic :: Utilities",
   "Typing :: Typed",
 ]
+dynamic = [
+  "version",
+]
 requires-python = ">=3.7"
 dependencies = [
   "virtualenv>=20",
@@ -65,17 +67,24 @@ Repository = "https://github.com/makukha/virtualenv-multipython"
 Issues = "https://github.com/makukha/virtualenv-multipython/issues"
 Changelog = "https://github.com/makukha/virtualenv-multipython/tree/main/CHANGELOG.md"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 # bump-my-version
 
 [tool.bumpversion]
 current_version = "0.1.2"
 allow_dirty = true
 files = [
-  {filename = "pyproject.toml"},
   {filename = "README.md"},
-  {filename = "setup.cfg"},
   {filename = "src/virtualenv_multipython/__init__.py"},
 ]
+
+# hatch
+
+[tool.hatch]
+version = { path = "src/docsub/__init__.py" }
 
 # mypy
 
