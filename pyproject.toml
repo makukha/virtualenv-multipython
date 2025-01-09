@@ -74,7 +74,7 @@ build-backend = "hatchling.build"
 # bump-my-version
 
 [tool.bumpversion]
-current_version = "0.1.2"
+current_version = "0.2.0"
 allow_dirty = true
 files = [
   {filename = "README.md"},
@@ -84,7 +84,7 @@ files = [
 # hatch
 
 [tool.hatch]
-version = { path = "src/docsub/__init__.py" }
+version = { path = "src/virtualenv_multipython/__init__.py" }
 
 # mypy
 
