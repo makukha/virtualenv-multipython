@@ -43,6 +43,15 @@ wheels = [
 ]
 
 [[package]]
+name = "caseutil"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/80/1e/57611bb2607eb445abb65bd61357be72238c8b5f6c87f89e153b2abdc280/caseutil-0.7.1.tar.gz", hash = "sha256:2d176849f871cab997aca89b0aea4912326c98063216d6bb867ea6b99ac3ffcf", size = 32332 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b7/70/86fb8fb246297776e9a0e2e5cc566ad741116fd70389cbfcf6dffd1c7130/caseutil-0.7.1-py2.py3-none-any.whl", hash = "sha256:c61b0728b2491a0c26c0f05f0fef5355d3f7c2f84ad8a7ad38539ed70c0fa935", size = 7042 },
+]
+
+[[package]]
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
@@ -610,6 +619,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "bump-my-version", marker = "python_full_version >= '3.13'" },
+    { name = "caseutil", marker = "python_full_version >= '3.13'" },
     { name = "mypy", marker = "python_full_version >= '3.13'" },
     { name = "ruff", marker = "python_full_version >= '3.13'" },
     { name = "towncrier", marker = "python_full_version >= '3.13'" },
@@ -621,6 +631,7 @@ requires-dist = [{ name = "virtualenv", specifier = ">=20" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "bump-my-version", marker = "python_full_version >= '3.13'" },
+    { name = "caseutil", marker = "python_full_version >= '3.13'" },
     { name = "mypy", marker = "python_full_version >= '3.13'" },
     { name = "ruff", marker = "python_full_version >= '3.13'" },
     { name = "towncrier", marker = "python_full_version >= '3.13'" },

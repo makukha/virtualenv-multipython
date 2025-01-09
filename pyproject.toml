@@ -21,11 +21,7 @@ classifiers = [  # see https://pypi.org/classifiers/
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 2",
-  "Programming Language :: Python :: 2.7",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.5",
-  "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -53,6 +49,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "bump-my-version; python_version>='3.13'",
+  "caseutil; python_version>='3.13'",
   "mypy; python_version>='3.13'",
   "ruff; python_version>='3.13'",
   "towncrier; python_version>='3.13'",
