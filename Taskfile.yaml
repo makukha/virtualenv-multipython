@@ -23,13 +23,6 @@ tasks:
       - uv run ruff check
       - uv run ruff format --check
 
-  build:
-    desc: Build package.
-    cmds:
-      - uv lock
-      - rm -rf dist
-      - uv build
-
   test:
     desc: Run tests
     env:
@@ -37,7 +30,22 @@ tasks:
     cmds:
       - docker buildx bake -f tests/docker-bake.hcl
 
-  # --- release
+  # ----------------
+  #  RELEASE PROCES
+  # ----------------
+  # $ task lint
+  # $ task test
+  # $ task release:version -- [patch|minor|major]
+  # $ task release:changelog
+  # (edit changelog)
+  # $ task release:build
+  # $ task release:publish
+
+  release:version:
+    desc: Bump release version.
+    cmds:
+      - uv run bump-my-version bump -- {{.CLI_ARGS}}
+      - uv lock
 
   release:changelog:
     desc: Collect changelog entries.
@@ -46,14 +54,15 @@ tasks:
     cmds:
       - towncrier build --yes --version "{{.VERSION}}"
 
-  release:version:
-    desc: Bump release version.
+  release:build:
+    desc: Build package.
     cmds:
-      - uv run bump-my-version bump -- {{.CLI_ARGS}}
       - uv lock
+      - rm -rf dist
+      - uv build
 
   release:publish:
     desc: Publish package on PyPI.
     cmds:
-      - task: build
+      - task: release:build
       - uv publish
