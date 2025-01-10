@@ -31,15 +31,16 @@ RUN <<EOT
       echo "TEST CASE PASSED: ${CASE_NAME}" >&2
     }
 
-    TOX="$(py bin --path "$TOX_TAG") -m tox"
     # make sure all tags mentioned
+    # shellcheck disable=SC2001
+    INPUT_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
     IMAGE_TAGS="$(py ls --tag | sort | xargs)"
-    TESTING_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sed '/^py20$/d' | sort | xargs)"
-    [ "$TESTING_TAGS" = "$IMAGE_TAGS" ]
+    [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
 
-    export ENVS_PASSING="$(tr ' ' , <<<"$TAGS_PASSING")"
-    export ENVS_NOTFOUND="$(tr ' ' , <<<"$TAGS_NOTFOUND")"
-    export ENVS="$(sed 's/  */,/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND")"
+    TOX="$(py bin --path "$TOX_TAG") -m tox"
+    export ENVS_PASSING="${TAGS_PASSING// /,}"
+    export ENVS_NOTFOUND="${TAGS_NOTFOUND// /,}"
+    export ENVS="${INPUT_TAGS// /,}"
 
     # passing
     $TOX run -m passing -v
