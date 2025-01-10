@@ -12,6 +12,7 @@ NEG = '🚫'
 
 # ruff: noqa: S603 = check_output()
 
+
 def print_table(venv_spec: str) -> None:
     # get source data
     tags = check_output(
