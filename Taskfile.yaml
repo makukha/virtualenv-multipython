@@ -5,11 +5,15 @@ tasks:
   init:
     desc: Init local dev environment.
     cmds:
-      - uv lock
       - uv sync
 
+  news:
+    desc: Show available news categories.
+    cmds:
+      - yq '.tool.towncrier.type[].name' -oj -r pyproject.toml
+
   news:*:
-    desc: Create news item {added|breaking|changed|deprecated|docs|fixed|misc|removed|security}.
+    desc: Create news item in category.
     vars:
       SECTION: '{{index .MATCH 0}}'
       ISSUE: {sh: git rev-parse --abbrev-ref HEAD | cut -d- -f1}
@@ -23,24 +27,48 @@ tasks:
       - uv run mypy src
       - uv run ruff check
       - uv run ruff format --check
+      - hadolint tests/Dockerfile
 
   test:
-    desc: Run tests
+    desc: Run tests.
     env:
       BUILDKIT_PROGRESS: plain
     cmds:
-      - docker buildx bake -f tests/docker-bake.hcl
+      - task: build
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache
 
-  # ----------------
-  #  RELEASE PROCES
-  # ----------------
-  # $ task lint
-  # $ task test
-  # $ task release:version -- [patch|minor|major]
-  # $ task release:changelog
-  # (edit changelog)
-  # $ task release:build
-  # $ task release:publish
+  docs:
+    desc: Update docs.
+    cmds:
+      - uv run docsub -i README.md
+
+  build:
+    desc: Build package.
+    cmds:
+      - uv lock
+      - rm -rf dist
+      - uv build
+
+  clean:
+    desc: Prune build cache.
+    cmds:
+      - docker builder prune
+
+  #
+  #  RELEASE
+  # ---------
+  #
+  # > task lint
+  # > task test
+  # > task docs
+  #
+  # > task release:version -- [patch|minor|major]
+  # > task release:changelog
+  # > (proofread changelog)
+  #
+  # > task build
+  # > task release:publish
+  #
 
   release:version:
     desc: Bump release version.
@@ -51,16 +79,9 @@ tasks:
   release:changelog:
     desc: Collect changelog entries.
     vars:
-      VERSION: {sh: uvx bump-my-version show current_version 2>/dev/null}
+      VERSION: {sh: uv run bump-my-version show current_version 2>/dev/null}
     cmds:
-      - towncrier build --yes --version "{{.VERSION}}"
-
-  release:build:
-    desc: Build package.
-    cmds:
-      - uv lock
-      - rm -rf dist
-      - uv build
+      - uv run towncrier build --yes --version "{{.VERSION}}"
 
   release:publish:
     desc: Publish package on PyPI.

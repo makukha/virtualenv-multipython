@@ -3,7 +3,7 @@
 # NOTE: Keep in sync with setup.cfg
 
 name = "virtualenv-multipython"
-description = "virtualenv discovery plugin for multipython"
+description = "virtualenv discovery plugin for tox 4 and multipython"
 authors = [
   {name = "Michael Makukha", email = "m.makukha@gmail.com"},
 ]
@@ -50,6 +50,7 @@ dependencies = [
 dev = [
   "bump-my-version; python_version>='3.13'",
   "caseutil; python_version>='3.13'",
+  "docsub; python_version>='3.13'",
   "mypy; python_version>='3.13'",
   "ruff; python_version>='3.13'",
   "towncrier; python_version>='3.13'",
