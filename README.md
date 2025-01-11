@@ -35,7 +35,7 @@ This is why we use 6 different test setups:
 
 ## Test reports
 
-When `virtualenv-multipython` is installed inside *Host tag* environment, it allows to use selected ✅ *Target tag* (create virtualenv environment or as tox env name inside `env_list` in `tox.ini`) and automatically discovers corresponding [multipython](https://github.com/makukha/multipython) executable. For failing 🚫️ *Target tag*, python executable is not discoverable.
+When `virtualenv-multipython` is installed inside *Host tag* environment, it allows to use selected ✅ *Target tag* (create virtualenv environment or use as tox env name in `env_list`) and automatically discovers corresponding [multipython](https://github.com/makukha/multipython) executable. For failing 🚫️ *Target tag*, python executable is not discoverable.
 
 *Host tag* and *Target tags* are valid [multipython](https://hub.docker.com/r/makukha/multipython) tags. *Host tags* are listed vertically (rows), *target tags* are listed horizontally (columns).
 
