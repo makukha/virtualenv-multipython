@@ -21,46 +21,7 @@ RUN <<EOT
 EOT
 
 
-FROM virtualenv_base AS without_tox
-ARG CASE_NAME
-ARG PYTHON_TAG
-ARG TAGS_PASSING
-ARG TAGS_NOTFOUND
-RUN <<EOT
-    set -eEux -o pipefail
-    PYTHON="$(py bin --path "${PYTHON_TAG}")"
-    echo_success () {
-      echo "TEST CASE PASSED: ${CASE_NAME}" >&2
-    }
-    # verify tag coverage
-    # shellcheck disable=SC2001
-    INPUT_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
-    IMAGE_TAGS="$(py ls --tag | sort | xargs)"
-    [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
-
-    # run tests
-
-    export VIRTUALENV_DISCOVERY=multipython
-
-    # passing
-    for TAG in $TAGS_PASSING
-    do
-      $PYTHON -m virtualenv -p "$TAG" --with-traceback "/tmp/$TAG"
-      [ "$(py tag "/tmp/$TAG/bin/python")" = "$TAG" ]
-    done
-
-    # failing
-    for TAG in $TAGS_NOTFOUND
-    do
-      [[ "$($PYTHON -m virtualenv -p "$TAG" "/tmp/$TAG" 2>&1)" == *"RuntimeError: failed to find interpreter "* ]]
-      [ ! -d "/tmp/$TAG" ]
-    done
-
-    echo_success
-EOT
-
-
-FROM virtualenv_base AS with_tox4
+FROM virtualenv_base AS tox4
 ARG CASE_NAME
 ARG VIRTUALENV_PIN
 ARG TAGS_PASSING
@@ -94,6 +55,45 @@ RUN <<EOT
     # not found
     for TAG in $TAGS_NOTFOUND; do
       [[ "$($TOX run -e $TAG)" == *" failed with could not find python "* ]]
+    done
+
+    echo_success
+EOT
+
+
+FROM virtualenv_base AS virtualenv
+ARG CASE_NAME
+ARG PYTHON_TAG
+ARG TAGS_PASSING
+ARG TAGS_NOTFOUND
+RUN <<EOT
+    set -eEux -o pipefail
+    PYTHON="$(py bin --path "${PYTHON_TAG}")"
+    echo_success () {
+      echo "TEST CASE PASSED: ${CASE_NAME}" >&2
+    }
+    # verify tag coverage
+    # shellcheck disable=SC2001
+    INPUT_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
+    IMAGE_TAGS="$(py ls --tag | sort | xargs)"
+    [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
+
+    # run tests
+
+    export VIRTUALENV_DISCOVERY=multipython
+
+    # passing
+    for TAG in $TAGS_PASSING
+    do
+      $PYTHON -m virtualenv -p "$TAG" --no-seed --with-traceback "/tmp/$TAG"
+      [ "$(py tag "/tmp/$TAG/bin/python")" = "$TAG" ]
+    done
+
+    # failing
+    for TAG in $TAGS_NOTFOUND
+    do
+      [[ "$($PYTHON -m virtualenv -p "$TAG" "/tmp/$TAG" 2>&1)" == *"RuntimeError: failed to find interpreter "* ]]
+      [ ! -d "/tmp/$TAG" ]
     done
 
     echo_success

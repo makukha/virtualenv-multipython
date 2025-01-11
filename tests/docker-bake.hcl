@@ -1,4 +1,4 @@
-variable "CASES_WITH_TOX4" {
+variable "CASES_TOX4" {
   default = [
     # NOTE: py20 is always missing in multipython image
 
@@ -47,7 +47,7 @@ variable "CASES_WITH_TOX4" {
   ]
 }
 
-variable "CASES_WITHOUT_TOX" {
+variable "CASES_VIRTUALENV" {
   default = [
 
     {tag="py314t", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37", fail="py36 py35 py27", venv=">=20"},  # be ready to fail "py37"
@@ -86,23 +86,27 @@ variable "CASES_WITHOUT_TOX" {
     {tag="py37", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37", fail="py36 py35 py27", venv=">=20,<20.27"},
     {tag="py37", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.22"},
 
-    {tag="py36", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},  # be ready to fail "py37"
+    {tag="py36", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},
     {tag="py36", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.27"},
-    {tag="py36", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.270"},
+    {tag="py36", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.22"},
 
-    {tag="py35", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},  # be ready to fail "py37"
+    {tag="py35", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},
     {tag="py35", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.27"},
-    {tag="py35", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.270"},
+    {tag="py35", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.22"},
 
-    {tag="py27", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},  # be ready to fail "py37"
+    {tag="py27", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20"},
     {tag="py27", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.27"},
-    {tag="py27", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.270"},
+    {tag="py27", pass="py314t py313t py314 py313 py312 py311 py310 py39 py38 py37 py36 py35 py27", fail="", venv=">=20,<20.22"},
   ]
 }
 
-target "without_tox" {
+group "default" {
+  targets = ["tox4", "virtualenv"]
+}
+
+target "tox4" {
   dockerfile = "tests/Dockerfile"
-  target = "without_tox"
+  target = "tox4"
   context = "."
   args = {
     CASE_NAME = "${CASE["tag"]} ${CASE["venv"]}",
@@ -112,15 +116,15 @@ target "without_tox" {
     VIRTUALENV_PIN = CASE["venv"],
   }
   matrix = {
-    CASE = CASES_WITHOUT_TOX
+    CASE = CASES_TOX4
   }
-  name = "test_wot_${CASE["tag"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
+  name = "test_tox4_${CASE["tag"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
   output = ["type=cacheonly"]
 }
 
-target "with_tox4" {
+target "virtualenv" {
   dockerfile = "tests/Dockerfile"
-  target = "with_tox4"
+  target = "virtualenv"
   context = "."
   args = {
     CASE_NAME = "${CASE["tag"]} ${CASE["venv"]}",
@@ -130,8 +134,8 @@ target "with_tox4" {
     VIRTUALENV_PIN = CASE["venv"],
   }
   matrix = {
-    CASE = CASES_WITH_TOX4
+    CASE = CASES_VIRTUALENV
   }
-  name = "test_wt4_${CASE["tag"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
+  name = "test_venv_${CASE["tag"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
   output = ["type=cacheonly"]
 }
