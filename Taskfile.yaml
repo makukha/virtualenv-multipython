@@ -29,17 +29,24 @@ tasks:
       - uv run ruff format --check
       - hadolint tests/Dockerfile
 
+  shell:
+    desc: Shell to multipython:unsafe, cwd=/test.
+    cmds:
+      - docker run --rm -it -v .:/test -w /test -h unsafe makukha/multipython:unsafe
+
   test:
     desc: Run tests.
     env:
       BUILDKIT_PROGRESS: plain
     cmds:
       - task: build
-      - docker buildx bake -f tests/docker-bake.hcl --no-cache
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache tox4
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache virtualenv
 
   docs:
     desc: Update docs.
     cmds:
+      - uv run python docsubfile.py gen-reports
       - uv run docsub -i README.md
 
   build:
@@ -53,6 +60,7 @@ tasks:
     desc: Prune build cache.
     cmds:
       - docker builder prune
+      - docker image prune
 
   #
   #  RELEASE
