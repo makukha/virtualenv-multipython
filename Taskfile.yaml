@@ -40,7 +40,8 @@ tasks:
       BUILDKIT_PROGRESS: plain
     cmds:
       - task: build
-      - docker buildx bake -f tests/docker-bake.hcl --no-cache
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache tox4
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache virtualenv
 
   docs:
     desc: Update docs.
