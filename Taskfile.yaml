@@ -94,5 +94,5 @@ tasks:
   release:publish:
     desc: Publish package on PyPI.
     cmds:
-      - task: release:build
+      - task: build
       - uv publish

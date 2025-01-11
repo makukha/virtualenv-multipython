@@ -20,6 +20,7 @@ RX = (
     re.compile(r'^(?P<impl>py)(?P<maj>3)(?P<min>[0-9][0-9])(?P<suffix>t)$'),
 )
 
+
 class Multipython(Discover):  # type: ignore[misc]
     def __init__(self, options):  # type: (argparse.Namespace) -> None
         super(Multipython, self).__init__(options)

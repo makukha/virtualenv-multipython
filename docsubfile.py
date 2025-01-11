@@ -89,7 +89,7 @@ def pretty_report(name: str) -> None:
     col_title = 'TARGETS'
     tags = data['target_tags']
 
-    if len(tags)> len(ALPHA):
+    if len(tags) > len(ALPHA):
         raise RuntimeError('Too many tags')
 
     width = max(len(row_title), max(len(v) for v in tags))
