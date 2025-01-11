@@ -42,16 +42,18 @@ class Multipython(Discover):  # type: ignore[misc]
 
         return None
 
-    def get_python_info(self, tag):  # type: (str) -> Union[str, None]
+    def get_python_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
         # get path
         try:
+            # ruff: noqa: S603 = allow check_output with arbitrary cmdline
+            # ruff: noqa: S607 = py is on path, specific location is not guaranteed
             path = check_output(['py', 'bin', '--path', tag]).decode('utf-8').strip()
             if not path:
                 return None
-        except:
+        except Exception:
             return None
         # get info
         try:
             return PythonInfo.from_exe(path, resolve_to_host=False)
-        except:
+        except Exception:
             return None
