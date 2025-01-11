@@ -40,11 +40,12 @@ tasks:
       BUILDKIT_PROGRESS: plain
     cmds:
       - task: build
-      - docker buildx bake -f tests/docker-bake.hcl --no-cache without_tox with_tox4
+      - docker buildx bake -f tests/docker-bake.hcl --no-cache
 
   docs:
     desc: Update docs.
     cmds:
+      - uv run python docsubfile.py gen-reports
       - uv run docsub -i README.md
 
   build:
