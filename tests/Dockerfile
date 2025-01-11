@@ -10,6 +10,7 @@ EOT
 
 
 FROM base AS virtualenv_base
+SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
 ARG PYTHON_TAG
 ARG VIRTUALENV_PIN
 RUN <<EOT
@@ -22,6 +23,7 @@ EOT
 
 
 FROM virtualenv_base AS tox4
+SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
 ARG CASE_NAME
 ARG VIRTUALENV_PIN
 ARG TAGS_PASSING
@@ -62,6 +64,7 @@ EOT
 
 
 FROM virtualenv_base AS virtualenv
+SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
 ARG CASE_NAME
 ARG PYTHON_TAG
 ARG TAGS_PASSING
