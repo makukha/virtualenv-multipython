@@ -8,6 +8,26 @@ All notable changes to this project will be documented in this file. Changes for
 
 <!-- towncrier release notes start -->
 
+## [v0.3.0](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.3.0) — 2025-01-12
+
+### Added 🌿
+
+- Support for Python 2.7, 3.5, 3.6 ([#24](https://github.com/makukha/virtualenv-multipython/issues/24))
+
+### Changed
+
+- Updated tests to generate test matrix docs ([#20](https://github.com/makukha/virtualenv-multipython/issues/20))
+
+### Docs
+
+- Added test matrix similar to [tox-multipython](https://github.com/makukha/tox-multipython) ([#20](https://github.com/makukha/virtualenv-multipython/issues/20))
+
+### Misc
+
+- Tests are now linted with [Hadolint](https://github.com/hadolint/hadolint) ([#22](https://github.com/makukha/virtualenv-multipython/issues/22))
+- Added virtualenv-only test setup ([#24](https://github.com/makukha/virtualenv-multipython/issues/24))
+
+
 ## [v0.2.1](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.2.1) — 2025-01-09
 
 ### Fixed
