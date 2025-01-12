@@ -1,5 +1,6 @@
 import re
 from subprocess import check_output
+import sys
 
 try:
     from typing import TYPE_CHECKING, Union
@@ -40,7 +41,6 @@ class Multipython(Discover):  # type: ignore[misc]
                     info = self.get_python_info(python)
                     if info:
                         return info
-
         return None
 
     def get_python_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
@@ -48,7 +48,9 @@ class Multipython(Discover):  # type: ignore[misc]
         try:
             # ruff: noqa: S603 = allow check_output with arbitrary cmdline
             # ruff: noqa: S607 = py is on path, specific location is not guaranteed
-            path = check_output(['py', 'bin', '--path', tag]).decode('utf-8').strip()
+            out = check_output(['py', 'bin', '--path', tag])
+            enc = sys.getfilesystemencoding()
+            path = (out.decode() if enc is None else out.decode(enc)).strip()
             if not path:
                 return None
         except Exception:
@@ -56,5 +58,6 @@ class Multipython(Discover):  # type: ignore[misc]
         # get info
         try:
             return PythonInfo.from_exe(path, resolve_to_host=False)
-        except Exception:
+        except Exception as exc:
+            print(exc)
             return None
