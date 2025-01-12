@@ -4,6 +4,7 @@ RUN <<EOT
     # remove version pre-installed with multipython
     python -m pip uninstall -y tox virtualenv-multipython
 EOT
+
 WORKDIR /test/tests
 
 
@@ -36,7 +37,7 @@ RUN <<EOT
     }
     # verify tag coverage
     # shellcheck disable=SC2001
-    INPUT_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
+    INPUT_TAGS="$(sed 's/  */\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
     IMAGE_TAGS="$(py ls --tag | sort | xargs)"
     [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
 

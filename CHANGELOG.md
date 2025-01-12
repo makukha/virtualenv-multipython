@@ -8,6 +8,18 @@ All notable changes to this project will be documented in this file. Changes for
 
 <!-- towncrier release notes start -->
 
+## [v0.3.1](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.3.1) — 2025-01-12
+
+### Fixed
+
+- Possible bug caused by unconditionally using `utf-8` for `py bin` results ([#28](https://github.com/makukha/virtualenv-multipython/issues/28))
+
+### Misc
+
+- Fixed cross testing charts display ([#30](https://github.com/makukha/virtualenv-multipython/issues/30))
+- Improved testing Dockerfile structure ([#33](https://github.com/makukha/virtualenv-multipython/issues/33))
+
+
 ## [v0.3.0](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.3.0) — 2025-01-12
 
 ### Added 🌿
