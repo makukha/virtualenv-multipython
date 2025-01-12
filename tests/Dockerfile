@@ -1,16 +1,15 @@
 FROM makukha/multipython:unsafe AS base
 SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
-COPY dist /test/dist
-COPY tests/tox.ini /test/tests/
-WORKDIR /test/tests
 RUN <<EOT
     # remove version pre-installed with multipython
     python -m pip uninstall -y tox virtualenv-multipython
 EOT
+WORKDIR /test/tests
 
 
 FROM base AS virtualenv_base
 SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
+COPY dist /test/dist
 ARG PYTHON_TAG
 ARG VIRTUALENV_PIN
 RUN <<EOT
@@ -24,6 +23,7 @@ EOT
 
 FROM virtualenv_base AS tox4
 SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
+COPY tests/tox.ini /test/tests/
 ARG CASE_NAME
 ARG VIRTUALENV_PIN
 ARG TAGS_PASSING
