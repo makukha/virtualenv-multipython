@@ -1,7 +1,5 @@
 variable "CASES_TOX4" {
   default = [
-    # NOTE: py20 is always missing in multipython image
-
     # NOTE: In tests without virtualenv version downpin, py37 should also be failing,
     #   because virtualenv does not support Python 3.7 starting from v20.27.
     #   However, it is still capable to detect 3.7 interpreter, and we use failed tags
