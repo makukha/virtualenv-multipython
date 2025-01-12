@@ -1,3 +1,5 @@
+# ruff: noqa: S603 = allow check_output with arbitrary cmdline
+
 import json
 from pathlib import Path
 from shlex import split
@@ -8,15 +10,13 @@ import cyclopts
 
 IMG = 'makukha/multipython:unsafe'
 BAKEFILE = 'tests/docker-bake.hcl'
-REPORTS_DIR = Path('docs/test_reports')
+REPORTS_DIR = Path('docs/testreport')
 
 POS = '✅'
 NEG = '🚫'
 COLSP = ' '
 
 app = cyclopts.App()
-
-# ruff: noqa: S603 = allow check_output with arbitrary cmdline
 
 
 @app.command
@@ -100,7 +100,8 @@ def pretty_report(name: str) -> None:
     for i, tag in enumerate(tags):
         res = data['host_tag_results'].get(tag)
         marks = (
-            [{'P': POS, 'F': NEG}[x] for x in res] if res
+            [{'P': POS, 'F': NEG}[x] for x in res]
+            if res
             else COLSP.join('.' * len(tags))
         )
         print(f'{tag: >{width}}  {ALPHA[i]} {"".join(marks)}')
