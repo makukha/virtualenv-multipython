@@ -12,6 +12,7 @@ REPORTS_DIR = Path('docs/test_reports')
 
 POS = '✅'
 NEG = '🚫'
+COLSP = ' '
 
 app = cyclopts.App()
 
@@ -95,9 +96,13 @@ def pretty_report(name: str) -> None:
     width = max(len(row_title), max(len(v) for v in tags))
 
     print(f'{" " * width}    {col_title}')
-    print(f'{row_title: >{width}}    {" ".join(ALPHA[:len(tags)])}')
+    print(f'{row_title: >{width}}    {COLSP.join(ALPHA[:len(tags)])}')
     for i, tag in enumerate(tags):
-        marks = [{'P': POS, 'F': NEG}[x] for x in data['host_tag_results'].get(tag, '')]
+        res = data['host_tag_results'].get(tag)
+        marks = (
+            [{'P': POS, 'F': NEG}[x] for x in res] if res
+            else COLSP.join('.' * len(tags))
+        )
         print(f'{tag: >{width}}  {ALPHA[i]} {"".join(marks)}')
 
 
