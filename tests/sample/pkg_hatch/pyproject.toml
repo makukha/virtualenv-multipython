@@ -1,0 +1,12 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pkg_hatch"
+version = "1"
+requires-python = ">=2.7"
+scripts = {pkg_hatch = "pkg_hatch:main"}
+
+[tool.uv]
+package = true

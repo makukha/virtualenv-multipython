@@ -1,104 +1,45 @@
+# build sample package
+
+FROM python:3.12-slim-bookworm AS build
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY tests/sample /sample
+WORKDIR /sample/pkg_hatch
+RUN uv build
+WORKDIR /proj
+
+# base
+
 FROM makukha/multipython:unsafe AS base
 SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
-RUN <<EOT
-    # remove version pre-installed with multipython
-    python -m pip uninstall -y tox virtualenv-multipython
-EOT
-
-WORKDIR /test/tests
-
-
-FROM base AS virtualenv_base
-SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
-COPY dist /test/dist
-ARG PYTHON_TAG
+COPY dist /proj/dist
+COPY tests/test_*.sh /proj/tests/
+WORKDIR /proj/tests
+# args
+ARG HOST_TAG
+ARG TARGET_TAGS_PASSING
+ARG TARGET_TAGS_NOTFOUND
 ARG VIRTUALENV_PIN
+# envs
+ENV HOST_TAG="${HOST_TAG}"
+ENV TARGET_TAGS_PASSING="${TARGET_TAGS_PASSING}"
+ENV TARGET_TAGS_NOTFOUND="${TARGET_TAGS_NOTFOUND}"
+ENV VIRTUALENV_PIN="${VIRTUALENV_PIN}"
+
+# targets
+
+FROM base AS virtualenv
 RUN <<EOT
-    set -eEux -o pipefail
-    PYTHON="$(py bin --path "${PYTHON_TAG}")"
-    # install virtualenv and current plugin version
-    $PYTHON -m pip install "virtualenv$VIRTUALENV_PIN" wheel
-    $PYTHON -m pip install ../dist/*.whl
+    PIP="$(py bin --path "$HOST_TAG") -m pip"
+    $PIP install "virtualenv$VIRTUALENV_PIN"
+    $PIP install --no-index --find-links=/proj/dist virtualenv-multipython
+    bash test_virtualenv.sh
 EOT
 
-
-FROM virtualenv_base AS tox4
-SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
-COPY tests/tox.ini /test/tests/
-ARG CASE_NAME
-ARG VIRTUALENV_PIN
-ARG TAGS_PASSING
-ARG TAGS_NOTFOUND
-RUN <<EOT
-    set -eEux -o pipefail
-    PYTHON="$(py bin --path "${PYTHON_TAG}")"
-    echo_success () {
-      echo "TEST CASE PASSED: ${CASE_NAME}" >&2
-    }
-    # verify tag coverage
-    # shellcheck disable=SC2001
-    INPUT_TAGS="$(sed 's/  */\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
-    IMAGE_TAGS="$(py ls --tag | sort | xargs)"
-    [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
-
-    # add tox
-    $PYTHON -m pip install "tox>=4,<5" "virtualenv$VIRTUALENV_PIN" wheel
-    TOX="$PYTHON -m tox -v"
-
-    # run tests
-
-    export VIRTUALENV_DISCOVERY=multipython
-    export ENVS_PASSING="${TAGS_PASSING// /,}"
-    export ENVS_NOTFOUND="${TAGS_NOTFOUND// /,}"
-    export ENVS="${INPUT_TAGS// /,}"
-
-    # passing
-    $TOX run -m passing
-
-    # not found
-    for TAG in $TAGS_NOTFOUND; do
-      [[ "$($TOX run -e $TAG)" == *" failed with could not find python "* ]]
-    done
-
-    echo_success
-EOT
-
-
-FROM virtualenv_base AS virtualenv
-SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
-ARG CASE_NAME
-ARG PYTHON_TAG
-ARG TAGS_PASSING
-ARG TAGS_NOTFOUND
-RUN <<EOT
-    set -eEux -o pipefail
-    PYTHON="$(py bin --path "${PYTHON_TAG}")"
-    echo_success () {
-      echo "TEST CASE PASSED: ${CASE_NAME}" >&2
-    }
-    # verify tag coverage
-    # shellcheck disable=SC2001
-    INPUT_TAGS="$(sed 's/ /\n/g' <<<"$TAGS_PASSING $TAGS_NOTFOUND" | sort | xargs)"
-    IMAGE_TAGS="$(py ls --tag | sort | xargs)"
-    [ "$INPUT_TAGS" = "py20 $IMAGE_TAGS" ]
-
-    # run tests
-
-    export VIRTUALENV_DISCOVERY=multipython
-
-    # passing
-    for TAG in $TAGS_PASSING
-    do
-      $PYTHON -m virtualenv -p "$TAG" --no-seed --with-traceback "/tmp/$TAG"
-      [ "$(py tag "/tmp/$TAG/bin/python")" = "$TAG" ]
-    done
-
-    # failing
-    for TAG in $TAGS_NOTFOUND
-    do
-      [[ "$($PYTHON -m virtualenv -p "$TAG" "/tmp/$TAG" 2>&1)" == *"RuntimeError: failed to find interpreter "* ]]
-      [ ! -d "/tmp/$TAG" ]
-    done
-
-    echo_success
+FROM base AS tox4
+COPY tests/tox.ini /proj/tests/
+RUN --mount=type=bind,from=build,source=/sample,target=/sample <<EOT
+    PIP="$(py bin --path "$HOST_TAG") -m pip"
+    $PIP install "virtualenv$VIRTUALENV_PIN" "tox>=4,<5"
+    $PIP install --no-index --find-links=/proj/dist virtualenv-multipython
+    bash test_tox4.sh
 EOT
