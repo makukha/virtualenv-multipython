@@ -5,14 +5,14 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY tests/sample /sample
 WORKDIR /sample/pkg_hatch
 RUN uv build
-WORKDIR /proj
 
 # base
 
 FROM makukha/multipython:unsafe AS base
 SHELL ["/bin/bash", "-o", "errexit", "-o", "errtrace", "-o", "nounset", "-o", "pipefail", "-c"]
 COPY dist /proj/dist
-COPY tests/test_*.sh /proj/tests/
+COPY tests/test_*.sh tests/tox.ini /proj/tests/
+COPY --from=build /sample/pkg_hatch/dist /sample/pkg_hatch/dist
 WORKDIR /proj/tests
 # args
 ARG HOST_TAG
@@ -25,21 +25,34 @@ ENV TARGET_TAGS_PASSING="${TARGET_TAGS_PASSING}"
 ENV TARGET_TAGS_NOTFOUND="${TARGET_TAGS_NOTFOUND}"
 ENV VIRTUALENV_PIN="${VIRTUALENV_PIN}"
 
-# targets
+# test targets
 
 FROM base AS virtualenv
 RUN <<EOT
     PIP="$(py bin --path "$HOST_TAG") -m pip"
-    $PIP install "virtualenv$VIRTUALENV_PIN"
-    $PIP install --no-index --find-links=/proj/dist virtualenv-multipython
+    $PIP install --ignore-installed \
+      "virtualenv$VIRTUALENV_PIN" \
+      "virtualenv-multipython @ file://$(find /proj/dist -name '*.whl')"
     bash test_virtualenv.sh
 EOT
 
 FROM base AS tox4
-COPY tests/tox.ini /proj/tests/
-RUN --mount=type=bind,from=build,source=/sample,target=/sample <<EOT
+RUN <<EOT
     PIP="$(py bin --path "$HOST_TAG") -m pip"
-    $PIP install "virtualenv$VIRTUALENV_PIN" "tox>=4,<5"
-    $PIP install --no-index --find-links=/proj/dist virtualenv-multipython
+    $PIP install --ignore-installed \
+      "tox>=4,<5" \
+      "virtualenv$VIRTUALENV_PIN" \
+      "virtualenv-multipython @ file://$(find /proj/dist -name '*.whl')"
     bash test_tox4.sh
+EOT
+
+FROM base AS debug
+ENV MULTIPYTHON_DEBUG=true
+RUN <<EOT
+    PIP="$(py bin --path "$HOST_TAG") -m pip"
+    $PIP install --ignore-installed \
+      "tox>=4,<5" \
+      "virtualenv$VIRTUALENV_PIN" \
+      "virtualenv-multipython[debug] @ file://$(find /proj/dist -name '*.whl')"
+    # don't run tests at build time
 EOT

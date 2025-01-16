@@ -2,7 +2,7 @@
 set -eEux -o pipefail
 
 PYTHON="$(py bin --path "${HOST_TAG}")"
-TOX="$PYTHON -m tox -vvv"
+TOX="$PYTHON -m tox -v"
 
 # verify tag coverage
 # shellcheck disable=SC2001

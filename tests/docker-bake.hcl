@@ -99,7 +99,7 @@ variable "CASES_VIRTUALENV" {
   ]
 }
 
-group "default" {
+group "test" {
   targets = [
     "tox4",
 #     "virtualenv",
@@ -108,7 +108,6 @@ group "default" {
 
 target "__base__" {
   dockerfile = "tests/Dockerfile"
-  context = "."
   output = ["type=cacheonly"]
   no-cache = true
 }
@@ -141,4 +140,22 @@ target "virtualenv" {
     TARGET_TAGS_NOTFOUND = "${CASE["fail"]} py20",  # always missing in multipython
     VIRTUALENV_PIN = CASE["venv"],
   }
+}
+
+# debug
+
+target "debug" {
+  inherits = ["__base__"]
+  output = ["type=image"]
+  target = "debug"
+  args = {
+    MULTIPYTHON_DEBUG = "true",
+    HOST_TAG = "py313",
+    TARGET_TAGS_PASSING = "py314t py313t py314 py313 py312 py311 py310 py39 py38",
+    TARGET_TAGS_NOTFOUND = "py37 py36 py35 py27 py20",
+    VIRTUALENV_PIN = ">=20",
+  }
+  tags = [
+    "virtualenv-multipython-debug",
+  ]
 }

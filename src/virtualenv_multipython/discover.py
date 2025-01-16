@@ -1,3 +1,4 @@
+import os
 import re
 from subprocess import check_output
 import sys
@@ -15,6 +16,16 @@ from virtualenv.discovery.builtin import Builtin  # type: ignore
 from virtualenv.discovery.discover import Discover  # type: ignore
 from virtualenv.discovery.py_info import PythonInfo  # type: ignore
 
+# debug logging
+
+DEBUG = bool(os.environ.get('MULTIPYTHON_DEBUG', False))
+if DEBUG:
+    try:
+        from loguru import logger
+        debug = logger.debug
+    except ImportError:
+        pass
+
 
 RX = (
     re.compile(r'^(?P<impl>py)(?P<maj>[23])(?P<min>[0-9][0-9]?)$'),
@@ -22,11 +33,14 @@ RX = (
 )
 
 
-class Multipython(Discover):  # type: ignore[misc]
+class MultiPython(Discover):  # type: ignore[misc]
     def __init__(self, options):  # type: (argparse.Namespace) -> None
-        super(Multipython, self).__init__(options)
+        super(MultiPython, self).__init__(options)
         self.python = options.python
         self.tox_env = options.env.get('TOX_ENV_NAME')
+        if DEBUG:
+            debug(f'Created MultiPython with options: {options.__dict__}')
+            self.builtin = Builtin(options)
 
     @classmethod
     def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
@@ -35,13 +49,17 @@ class Multipython(Discover):  # type: ignore[misc]
     def run(self):  # type: () -> Union[PythonInfo, None]
         requests = [self.tox_env] if self.tox_env else []
         requests.extend(self.python)
+        ret = None
         for python in requests:
             for rx in RX:
                 if rx.match(python):
-                    info = self.get_python_info(python)
-                    if info:
-                        return info
-        return None
+                    ret = self.get_python_info(python)
+                    if ret:
+                        break
+        if DEBUG:
+            debug(f'Returning result: {ret}')
+            debug(f'Builtin discovery would return result: {self.builtin.run()}')
+        return ret
 
     def get_python_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
         # get path
