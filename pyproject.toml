@@ -108,7 +108,7 @@ docstring-code-line-length = "dynamic"
 # towncrier
 
 [tool.towncrier]
-directory = "news.d"
+directory = "NEWS.d"
 filename = "CHANGELOG.md"
 title_format = "## [v{version}](https://github.com/makukha/virtualenv-multipython/releases/tag/v{version}) — {project_date}"
 issue_format = "[#{issue}](https://github.com/makukha/virtualenv-multipython/issues/{issue})"
