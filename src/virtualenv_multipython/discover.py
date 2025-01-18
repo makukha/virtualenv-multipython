@@ -59,7 +59,9 @@ class MultiPython(Discover):  # type: ignore[misc]
                 for rx in RX:
                     if rx.match(python):
                         if DEBUG:
-                            logger.debug('Candidate tag: {python}'.format(python=python))
+                            logger.debug(
+                                'Candidate tag: {python}'.format(python=python)
+                            )
                         ret = self.get_tag_info(python)
             if ret:
                 break
@@ -75,7 +77,9 @@ class MultiPython(Discover):  # type: ignore[misc]
             return PythonInfo.from_exe(path, resolve_to_host=False)
         except Exception:
             if DEBUG:
-                logger.exception('Failed to get PythoInfo for path "{path}"'.format(path=path))
+                logger.exception(
+                    'Failed to get PythoInfo for path "{path}"'.format(path=path)
+                )
             return None
 
     def get_tag_info(self, tag):  # type: (str) -> Union[PythonInfo, None]

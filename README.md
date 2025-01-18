@@ -9,7 +9,7 @@
 ](https://github.com/makukha/docsub)
 
 > [!NOTE]
-> [virtualenv-multipython]() has twin plugin [tox-multipython](https://github.com/makukha/tox-multipython) that serves the same purpose for [tox](https://tox.wiki) 3
+> [virtualenv-multipython]() has twin plugin [tox-multipython](https://github.com/makukha/tox-multipython) that serves similar purpose for [tox](https://tox.wiki) 3
 
 This [virtualenv](https://virtualenv.pypa.io) plugin comes pre-installed in [multipython](https://hub.docker.com/r/makukha/multipython) Docker image and is responsible for resolving tox environment name to Python executable. Most probably, you don't need to install it yourself.
 

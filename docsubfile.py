@@ -19,15 +19,14 @@ COLSP = ' '
 
 
 @click.group()
-def x():
-    ...
+def x(): ...
 
 
 SUITE = {
-    'venv_v':   ('virtualenv', '>=20'),
+    'venv_v': ('virtualenv', '>=20'),
     'venv_v27': ('virtualenv', '>=20,<20.27'),
     'venv_v22': ('virtualenv', '>=20,<20.22'),
-    'tox4_v':   ('tox4', '>=20'),
+    'tox4_v': ('tox4', '>=20'),
     'tox4_v27': ('tox4', '>=20,<20.27'),
     'tox4_v22': ('tox4', '>=20,<20.22'),
 }
@@ -50,7 +49,7 @@ def generate(env: Environment) -> None:
     ).splitlines()
     # generate reports
     for suite in SUITE:
-        write_report(temp_dir, data, tags, suite, skip_tags=('py20',))
+        write_report(temp_dir, data, tags, suite, skip=('py20',))
 
 
 def write_report(
@@ -58,13 +57,13 @@ def write_report(
     data: dict,
     tags: list[str],
     suite: str,
-    skip_tags: tuple[str, ...],
+    skip: tuple[str, ...],
 ) -> None:
     def host_tag_results(args: dict) -> tuple[str, list[str]]:
         marks = [
             *((t, 'P') for t in args['TARGET_TAGS_PASSING'].split()),
-            *((t, 'I') for t in set(args['TARGET_TAGS_NOINSTALL'].split()) - set(skip_tags)),
-            *((t, 'F') for t in set(args['TARGET_TAGS_NOTFOUND'].split()) - set(skip_tags)),
+            *((t, 'I') for t in set(args['TARGET_TAGS_NOINSTALL'].split()) - set(skip)),
+            *((t, 'F') for t in set(args['TARGET_TAGS_NOTFOUND'].split()) - set(skip)),
         ]
         marks.sort(key=lambda tm: tags.index(tm[0]))
         return (args['HOST_TAG'], ''.join(tm[1] for tm in marks))
@@ -101,7 +100,7 @@ def pretty(env: Environment, suite: str) -> None:
     width = max(len(row_title), max(len(v) for v in tags))
 
     print(f'{row_title: >{width}}    {col_title}')
-    print(f'{"—" * width}    {COLSP.join(ALPHA[:len(tags)])}')
+    print(f'{"—" * width}    {COLSP.join(ALPHA[: len(tags)])}')
     for i, tag in enumerate(tags):
         res = data['host_tag_results'].get(tag)
         marks = (
