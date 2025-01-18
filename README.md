@@ -22,9 +22,13 @@ Environment names supported are all multipython tags, including free threading P
 
 There are two types of tests performed, both with env var `VIRTUALENV_DISCOVERY=multipython` exported:
 1. ***Virtualenv.*** Install `virtualenv` in *host tag* environment and create virtual environments for all *target tags*. Environment's python version must match *target tag*. In these tests we test all [multipython](https://github.com/makukha/multipython) tags as both *host tags* and *target tags*.
-2. ***Tox 4.*** `tox` and `virtualenv` are installed in *host tag* environment, and `tox run` is executed on `tox.ini` with env names equal to *target tags*. Tox environment's python version must match tox env name and *target tag*. In these tests we test all [multipython](https://github.com/makukha/multipython) tags as *target tags* and all tags except `py27`, `py35`, `py36` as *target tags* (because tox 4 is requires Python 3.7+).
+2. ***Tox 4.*** `tox` and `virtualenv` are installed in *host tag* environment, and `tox run` is executed on `tox.ini` with env names equal to *target tags*. Tox environment's python version must match tox env name and *target tag*. In these tests we test all [multipython](https://github.com/makukha/multipython) tags as *target tags* and all tags except `py27`, `py35`, `py36` as *target tags* (because tox 4 is requires Python 3.7+). This test includes subtests:
+    - assert `{env_python}` version when tox env is activated
+    - assert `python` version when tox env is activated
+    - install externally built *sample package* in tox environment
+    - execute entrypoint script of externally built sample package
 
-Virtualenv supports discovery plugins since v20. In v20.22, it dropped support for Python <=3.6, in v20.27 it dropped support for Python 3.7. You will see below that it is still capable to *discover* 3.7, but probably those 3.7 environments won't be fully functional.
+Virtualenv supports discovery plugins since v20. In v20.22, it dropped support for Python <=3.6, in v20.27 it dropped support for Python 3.7.
 
 This is why we use 6 different test setups:
 
@@ -37,12 +41,9 @@ This is why we use 6 different test setups:
 
 ## Test report
 
-When `virtualenv-multipython` is installed inside *Host tag* environment, it allows to use selected ✅ *Target tag* (create virtualenv environment or use as tox env name in `env_list`) and automatically discovers corresponding [multipython](https://github.com/makukha/multipython) executable. For failing 🚫️ *Target tag*, python executable is not discoverable.
+When `virtualenv-multipython` is installed inside *host tag* environment, it allows to use selected ✅ *target tag* (create virtualenv environment or use as tox env name in `env_list`) and automatically discovers corresponding [multipython](https://github.com/makukha/multipython) executable. For prohibited 🚫️ *target tag*, python executable is not discoverable. For failing 💥 *target tag*, interpreter is discoverable, but virtual environment with *sample package* cannot be created.
 
 *Host tag* and *Target tags* are valid [multipython](https://hub.docker.com/r/makukha/multipython) tags. *Host tags* are listed vertically (rows), *target tags* are listed horizontally (columns).
-
-> [!NOTE]
-> The fully green line for `py313` is a multipython design flaw that should be fixed soon: https://github.com/makukha/multipython/issues/76
 
 <table>
 <tbody>
@@ -52,15 +53,15 @@ When `virtualenv-multipython` is installed inside *Host tag* environment, it all
 <td>
 <code>virtualenv>=20</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report venv -->
+<!-- docsub: x pretty venv_v -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
 py314t  A ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py314  C ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py313  D ✅✅✅✅✅✅✅✅✅✅✅✅✅
+ py313  D ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py312  E ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py311  F ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py310  G ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
@@ -77,20 +78,20 @@ py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 <td>
 <code>tox>=4,<5</code>, <code>virtualenv>=20</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report tox4_venv -->
+<!-- docsub: x pretty tox4_v -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
-py314t  A ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
-py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py314  C ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py313  D ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py312  E ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py311  F ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py310  G ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
-  py39  H ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
-  py38  I ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
+py314t  A ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+py313t  B ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+ py314  C ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+ py313  D ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+ py312  E ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+ py311  F ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+ py310  G ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+  py39  H ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
+  py38  I ✅✅✅✅✅✅✅✅✅💥🚫🚫🚫
   py37  J ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
   py36  K . . . . . . . . . . . . .
   py35  L . . . . . . . . . . . . .
@@ -106,15 +107,15 @@ py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 <td>
 <code>virtualenv>=20,<20.27</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report venv27 -->
+<!-- docsub: x pretty venv_v27 -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
 py314t  A ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py314  C ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
- py313  D ✅✅✅✅✅✅✅✅✅✅✅✅✅
+ py313  D ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py312  E ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py311  F ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py310  G ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
@@ -131,11 +132,11 @@ py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 <td>
 <code>tox>=4,<5</code>, <code>virtualenv>=20,<20.27</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report tox4_venv27 -->
+<!-- docsub: x pretty tox4_v27 -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
 py314t  A ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
  py314  C ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
@@ -160,11 +161,11 @@ py313t  B ✅✅✅✅✅✅✅✅✅✅🚫🚫🚫
 <td>
 <code>virtualenv>=20,<20.22</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report venv22 -->
+<!-- docsub: x pretty venv_v22 -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
 py314t  A ✅✅✅✅✅✅✅✅✅✅✅✅✅
 py313t  B ✅✅✅✅✅✅✅✅✅✅✅✅✅
  py314  C ✅✅✅✅✅✅✅✅✅✅✅✅✅
@@ -185,11 +186,11 @@ py313t  B ✅✅✅✅✅✅✅✅✅✅✅✅✅
 <td>
 <code>tox>=4,<5</code>, <code>virtualenv>=20,<20.22</code>
 <!-- docsub: begin -->
-<!-- docsub: exec uv run python docsubfile.py pretty-report tox4_venv22 -->
+<!-- docsub: x pretty tox4_v22 -->
 <!-- docsub: lines after 1 upto -1 -->
 <pre>
-          TARGETS
-  HOST    A B C D E F G H I J K L M
+  HOST    TARGETS
+——————    A B C D E F G H I J K L M
 py314t  A ✅✅✅✅✅✅✅✅✅✅✅✅✅
 py313t  B ✅✅✅✅✅✅✅✅✅✅✅✅✅
  py314  C ✅✅✅✅✅✅✅✅✅✅✅✅✅

@@ -55,7 +55,7 @@ tasks:
   docs:
     desc: Update docs.
     cmds:
-      - uv run python docsubfile.py gen-reports
+      - uv run docsub x generate
       - uv run docsub apply -i README.md
 
   build:
