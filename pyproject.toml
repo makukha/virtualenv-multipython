@@ -1,7 +1,8 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-
-# NOTE: Keep in sync with setup.cfg
-
 name = "virtualenv-multipython"
 description = "virtualenv discovery plugin for tox 4 and multipython"
 authors = [
@@ -49,30 +50,28 @@ requires-python = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3,!=3.4"
 dependencies = [
   "virtualenv>=20",
 ]
+[project.optional-dependencies]
+debug = ["loguru; python_version>='3.5'"]
 
 [dependency-groups]
 dev = [
   "bump-my-version; python_version>='3.13'",
   "caseutil; python_version>='3.13'",
-  "cyclopts; python_version>='3.13'",
   "docsub; python_version>='3.13'",
   "mypy; python_version>='3.13'",
+  "rich; python_version>='3.13'",
   "ruff; python_version>='3.13'",
   "towncrier; python_version>='3.13'",
 ]
 
 [project.entry-points."virtualenv.discovery"]
-multipython = "virtualenv_multipython.discover:Multipython"
+multipython = "virtualenv_multipython.discover:MultiPython"
 
 [project.urls]
 #Documentation = "https://multipython.readthedocs.io"
 Repository = "https://github.com/makukha/virtualenv-multipython"
 Issues = "https://github.com/makukha/virtualenv-multipython/issues"
 Changelog = "https://github.com/makukha/virtualenv-multipython/tree/main/CHANGELOG.md"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 # bump-my-version
 
@@ -108,7 +107,7 @@ docstring-code-line-length = "dynamic"
 # towncrier
 
 [tool.towncrier]
-directory = "news.d"
+directory = "NEWS.d"
 filename = "CHANGELOG.md"
 title_format = "## [v{version}](https://github.com/makukha/virtualenv-multipython/releases/tag/v{version}) — {project_date}"
 issue_format = "[#{issue}](https://github.com/makukha/virtualenv-multipython/issues/{issue})"
@@ -123,8 +122,3 @@ type = [
   {name = "Docs", directory = "docs", showcontent = true},
   {name = "Misc", directory = "misc", showcontent = true},
 ]
-
-# uv
-
-[tool.uv]
-package = true

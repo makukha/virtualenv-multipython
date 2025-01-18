@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. Changes for the *upcoming release* can be found in [News directory](https://github.com/makukha/virtualenv-multipython/tree/main/src/news.d).
+All notable changes to this project will be documented in this file. Changes for the *upcoming release* can be found in [News directory](https://github.com/makukha/virtualenv-multipython/tree/main/src/NEWS.d).
 
 > [!NOTE]
 > * The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).

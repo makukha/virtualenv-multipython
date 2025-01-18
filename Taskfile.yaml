@@ -27,6 +27,7 @@ tasks:
       - uv run mypy src
       - uv run ruff check
       - uv run ruff format --check
+      - shellcheck tests/test_*.sh
       - hadolint tests/Dockerfile
 
   shell:
@@ -40,14 +41,22 @@ tasks:
       BUILDKIT_PROGRESS: plain
     cmds:
       - task: build
-      - docker buildx bake -f tests/docker-bake.hcl --no-cache tox4
-      - docker buildx bake -f tests/docker-bake.hcl --no-cache virtualenv
+      - docker buildx bake -f tests/docker-bake.hcl test
+
+  debug:
+    desc: Run debugging test case.
+    env:
+      BUILDKIT_PROGRESS: plain
+    cmds:
+      - task: build
+      - docker buildx bake -f tests/docker-bake.hcl debug
+      - docker run --rm -it virtualenv-multipython-debug bash test_tox4.sh
 
   docs:
     desc: Update docs.
     cmds:
-      - uv run python docsubfile.py gen-reports
-      - uv run docsub -i README.md
+      - uv run docsub x generate
+      - uv run docsub apply -i README.md
 
   build:
     desc: Build package.
