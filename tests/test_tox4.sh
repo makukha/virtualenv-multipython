@@ -25,7 +25,7 @@ fi
 
 # test non-discoverable tags
 for TAG in $TARGET_TAGS_NOTFOUND; do
-  [[ "$($TOX run -e $TAG)" == *" failed with could not find python "* ]]
+  [[ "$($TOX run -e "$TAG")" == *" failed with could not find python "* ]]
 done
 
 # status

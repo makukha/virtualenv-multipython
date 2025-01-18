@@ -76,7 +76,7 @@ Changelog = "https://github.com/makukha/virtualenv-multipython/tree/main/CHANGEL
 # bump-my-version
 
 [tool.bumpversion]
-current_version = "0.3.1"
+current_version = "0.3.2"
 allow_dirty = true
 files = [
   {filename = "README.md"},

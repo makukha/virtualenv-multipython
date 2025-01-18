@@ -1,6 +1,7 @@
 # build sample package
 
 FROM python:3.12-slim-bookworm AS build
+# hadolint ignore=DL3022
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY tests/samplepkg /samplepkg
 WORKDIR /samplepkg
@@ -30,6 +31,7 @@ ENV VIRTUALENV_PIN="${VIRTUALENV_PIN}"
 # validate tags
 RUN <<EOT
     IMAGE_TAGS="$(py ls --tag | sort | xargs)"
+    # shellcheck disable=SC2001
     [ "py20 $IMAGE_TAGS" = "$(sed 's/  */\n/g' <<<"$ALL_TAGS" | sort | xargs)" ]
 EOT
 
