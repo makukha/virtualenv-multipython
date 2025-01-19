@@ -23,11 +23,17 @@ DEBUG = bool(os.environ.get('MULTIPYTHON_DEBUG', False))
 if DEBUG:
     try:
         from loguru import logger
+
         debug = logger.debug
         exception = logger.exception
+
     except ImportError:
-        debug = lambda msg: print(msg, file=sys.stderr)
-        exception = lambda msg: print(msg, file=sys.stderr)
+
+        def debug(msg):  # type: ignore
+            print(msg, file=sys.stderr)
+
+        def exception(msg):  # type: ignore
+            print(msg, file=sys.stderr)
 
 
 RX = (
