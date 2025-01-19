@@ -11,10 +11,14 @@ commasep () {
 }
 
 # prepare env vars referenced in tox.ini
-export ENVS_PASSING="$(commasep "$TARGET_TAGS_PASSING")"
-export ENVS_NOINSTALL="$(commasep "$TARGET_TAGS_NOINSTALL")"
-export ENVS_NOTFOUND="$(commasep "$TARGET_TAGS_NOTFOUND")"
-export ALL_ENVS="$(commasep "$ALL_TAGS")"
+ENVS_PASSING="$(commasep "$TARGET_TAGS_PASSING")"
+ENVS_NOINSTALL="$(commasep "$TARGET_TAGS_NOINSTALL")"
+ENVS_NOTFOUND="$(commasep "$TARGET_TAGS_NOTFOUND")"
+ALL_ENVS="$(commasep "$ALL_TAGS")"
+export ENVS_PASSING
+export ENVS_NOINSTALL
+export ENVS_NOTFOUND
+export ALL_ENVS
 
 # test passing tags
 for TAG in $TARGET_TAGS_PASSING; do

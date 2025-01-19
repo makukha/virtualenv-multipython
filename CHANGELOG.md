@@ -2,11 +2,25 @@
 
 All notable changes to this project will be documented in this file. Changes for the *upcoming release* can be found in [News directory](https://github.com/makukha/virtualenv-multipython/tree/main/src/NEWS.d).
 
-> [!NOTE]
-> * The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-> * This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+* The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+* This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 <!-- towncrier release notes start -->
+
+## [v0.4.0](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.4.0) — 2025-01-19
+
+***Breaking 🔥***
+
+- When no version is requested, use `sys.executable` ([#38](https://github.com/makukha/virtualenv-multipython/issues/38))
+
+***Fixed:***
+
+- Fixed command line invocation without python version request ([#38](https://github.com/makukha/virtualenv-multipython/issues/38))
+
+***Misc:***
+
+- Refactored tests ([#43](https://github.com/makukha/virtualenv-multipython/issues/43))
+
 
 ## [v0.3.2](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.3.2) — 2025-01-18
 
