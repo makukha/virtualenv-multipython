@@ -105,6 +105,11 @@ group "test" {
   ]
 }
 
+function "case_name" {
+  params = [suite, host_tag, venv_pin]
+  result = "test_${suite}_${host_tag}_${regex_replace(venv_pin, "[^0-9]", "_")}"
+}
+
 target "__base__" {
   dockerfile = "tests/Dockerfile"
   output = ["type=cacheonly"]
@@ -114,7 +119,7 @@ target "__base__" {
 target "tox4" {
   inherits = ["__base__"]
   target = "tox4"
-  name = "test_tox4_${CASE["host"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
+  name = case_name("tox4", CASE["host"], CASE["venv"])
   matrix = {
     CASE = CASES_TOX4
   }
@@ -130,7 +135,7 @@ target "tox4" {
 target "virtualenv" {
   inherits = ["__base__"]
   target = "virtualenv"
-  name = "test_venv_${CASE["host"]}_${regex_replace(CASE["venv"], "[^0-9]", "_")}"
+  name = case_name("venv", CASE["host"], CASE["venv"])
   matrix = {
     CASE = CASES_VIRTUALENV
   }
@@ -145,19 +150,22 @@ target "virtualenv" {
 
 # debug
 
+variable "DEBUG_CASE" {
+  default = CASES_TOX4[9]
+}
+
 target "debug" {
   inherits = ["__base__"]
   output = ["type=image"]
   target = "debug"
   args = {
-    MULTIPYTHON_DEBUG = "true",
-    HOST_TAG = "py313",
-    TARGET_TAGS_PASSING = "py314t py313t py314 py313 py312 py311 py310 py39 py38",
-    TARGET_TAGS_NOINSTALL = "py37",
-    TARGET_TAGS_NOTFOUND = "py36 py35 py27 py20",
-    VIRTUALENV_PIN = ">=20",
+    HOST_TAG = DEBUG_CASE["host"],
+    TARGET_TAGS_PASSING = DEBUG_CASE["pass"],
+    TARGET_TAGS_NOINSTALL = DEBUG_CASE["noinstall"],
+    TARGET_TAGS_NOTFOUND = "${DEBUG_CASE["notfound"]} py20",  # always missing in multipython
+    VIRTUALENV_PIN = DEBUG_CASE["venv"],
   }
   tags = [
-    "virtualenv-multipython-debug",
+    "tox-multipython-debug",
   ]
 }

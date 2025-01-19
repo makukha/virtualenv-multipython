@@ -20,9 +20,9 @@ Environment names supported are all multipython tags, including free threading P
 
 # Testing
 
-There are two types of tests performed, both with env var `VIRTUALENV_DISCOVERY=multipython` exported:
+There are two test suites:
 1. ***Virtualenv.*** Install `virtualenv` in *host tag* environment and create virtual environments for all *target tags*. Environment's python version must match *target tag*. In these tests we test all [multipython](https://github.com/makukha/multipython) tags as both *host tags* and *target tags*.
-2. ***Tox 4.*** `tox` and `virtualenv` are installed in *host tag* environment, and `tox run` is executed on `tox.ini` with env names equal to *target tags*. Tox environment's python version must match tox env name and *target tag*. In these tests we test all [multipython](https://github.com/makukha/multipython) tags as *target tags* and all tags except `py27`, `py35`, `py36` as *target tags* (because tox 4 is requires Python 3.7+). This test includes subtests:
+2. ***Tox 4.*** `tox` and `virtualenv` are installed in *host tag* environment, and `tox run` is executed on `tox.ini` with env names equal to *target tags*. Tox environment's python version must match tox env name and *target tag*. This test includes subtests:
     - assert `{env_python}` version when tox env is activated
     - assert `python` version when tox env is activated
     - install externally built *sample package* in tox environment
