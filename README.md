@@ -15,8 +15,13 @@ This [virtualenv](https://virtualenv.pypa.io) plugin comes pre-installed in [mul
 
 Environment names supported are all multipython tags, including free threading Python builds `py313t` and `py314t`. More names may be added in the future.
 
-> [!IMPORTANT]
-> This plugin does not fall back to tox python: interpreter discovery errors are explicit.
+# Behaviour
+
+* Loosely follow behaviour of builtin virtualenv discovery, with differences listed below.
+* Try requests one by one, starting with [`--try-first-with`](https://virtualenv.pypa.io/en/latest/cli_interface.html#try-first-with); if one matches multipython tag or is an absolute path, return it to virtualenv.
+* If no request matched conditions above, fail to discover interpreter.
+* In particular, commands on `PATH` are not allowed.
+* If no version was requested at all, fall back to `sys.executable`.
 
 # Testing
 

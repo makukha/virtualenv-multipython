@@ -35,4 +35,4 @@ for TAG in $TARGET_TAGS_NOTFOUND; do
 done
 
 # status
-echo "TEST CASE PASSED: ${HOST_TAG} ${VIRTUALENV_PIN}" >&2
+echo "TEST CASE PASSED: tox4 ${HOST_TAG} ${VIRTUALENV_PIN}" >&2

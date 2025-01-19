@@ -35,6 +35,14 @@ tasks:
     cmds:
       - docker run --rm -it -v .:/test -w /test -h unsafe makukha/multipython:unsafe
 
+  shell:*:
+    desc: Shell to specific test target.
+    vars:
+      TARGET: '{{index .MATCH 0}}'
+    cmds:
+      - docker buildx bake -f tests/docker-bake.hcl --set {{.TARGET}}.output=type=image {{.TARGET}}
+      - docker run --rm -it -h {{.TARGET}} virtualenv-multipython-{{.TARGET}}
+
   test:
     desc: Run tests.
     env:
@@ -99,6 +107,7 @@ tasks:
       VERSION: {sh: uv run bump-my-version show current_version 2>/dev/null}
     cmds:
       - uv run towncrier build --yes --version "{{.VERSION}}"
+      - sed -e's/^### \(.*\)$/***\1***/; s/\([a-z]\)\*\*\*$/\1:***/' -i '' CHANGELOG.md
 
   release:publish:
     desc: Publish package on PyPI.
