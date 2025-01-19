@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 from subprocess import check_output
@@ -22,8 +23,11 @@ DEBUG = bool(os.environ.get('MULTIPYTHON_DEBUG', False))
 if DEBUG:
     try:
         from loguru import logger
+        debug = logger.debug
+        exception = logger.exception
     except ImportError:
-        pass
+        debug = lambda msg: print(msg, file=sys.stderr)
+        exception = lambda msg: print(msg, file=sys.stderr)
 
 
 RX = (
@@ -38,9 +42,7 @@ class MultiPython(Discover):  # type: ignore[misc]
         self.try_first_with = options.try_first_with
         self.python = options.python
         if DEBUG:
-            data = options.__dict__
-            logger.debug('Created MultiPython with options: {data}'.format(data=data))
-            self.builtin = Builtin(options)
+            debug('Created MultiPython with options: {}'.format(options.__dict__))
 
     @classmethod
     def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
@@ -48,28 +50,28 @@ class MultiPython(Discover):  # type: ignore[misc]
 
     def run(self):  # type: () -> Union[PythonInfo, None]
         requests = self.try_first_with + self.python
+        if not len(requests):
+            requests.append(sys.executable)
+            if DEBUG:
+                debug('No versions requested, adding sys.executable')
 
         ret = None
         for python in requests:
             if os.path.isabs(python) and os.path.exists(python):
                 if DEBUG:
-                    logger.debug('Candidate path: {python}'.format(python=python))
+                    debug('Candidate path: {}'.format(python))
                 ret = self.get_path_info(python)
             else:
                 for rx in RX:
                     if rx.match(python):
                         if DEBUG:
-                            logger.debug(
-                                'Candidate tag: {python}'.format(python=python)
-                            )
+                            debug('Candidate tag: {}'.format(python))
                         ret = self.get_tag_info(python)
             if ret:
                 break
 
         if DEBUG:
-            data = self.builtin.run()
-            logger.debug('Builtin discovery result: {data}'.format(data=data))
-            logger.debug('Returning result: {ret}')
+            debug('Returning result: {}'.format(ret))
         return ret
 
     def get_path_info(self, path):  # type: (str) -> Union[PythonInfo, None]
@@ -77,9 +79,7 @@ class MultiPython(Discover):  # type: ignore[misc]
             return PythonInfo.from_exe(path, resolve_to_host=False)
         except Exception:
             if DEBUG:
-                logger.exception(
-                    'Failed to get PythoInfo for path "{path}"'.format(path=path)
-                )
+                exception('Failed to get PythonInfo for path "{}"'.format(path))
             return None
 
     def get_tag_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
@@ -94,7 +94,7 @@ class MultiPython(Discover):  # type: ignore[misc]
                 return None
         except Exception:
             if DEBUG:
-                logger.exception('Failed to call "py bin --path {tag}"'.format(tag=tag))
+                exception('Failed to call "py bin --path {}"'.format(tag))
             return None
         # get info
         return self.get_path_info(path)
