@@ -7,6 +7,22 @@ All notable changes to this project will be documented in this file. Changes for
 
 <!-- towncrier release notes start -->
 
+## [v0.4.1](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.4.1) — 2025-01-21
+
+***Changed:***
+
+- Use stdlib `logging` when `loguru` is not installed ([#48](https://github.com/makukha/virtualenv-multipython/issues/48))
+
+***Fixed:***
+
+- Bug when system executable was not selected for some Python versions ([#48](https://github.com/makukha/virtualenv-multipython/issues/48))
+
+***Misc:***
+
+- Started using  [just](https://just.systems) ([#48](https://github.com/makukha/virtualenv-multipython/issues/48))
+- Switched tests from Docker Bake to shell scripts and [GNU parallel](https://www.gnu.org/software/parallel) ([#48](https://github.com/makukha/virtualenv-multipython/issues/48))
+
+
 ## [v0.4.0](https://github.com/makukha/virtualenv-multipython/releases/tag/v0.4.0) — 2025-01-19
 
 ***Breaking 🔥***

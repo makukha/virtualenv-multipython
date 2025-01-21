@@ -67,6 +67,7 @@ py_install () {
 
 validate_tags () {
   TAGS="$1"
+  # shellcheck disable=SC2001
   [ "$(py ls --tag | sort | xargs)" = "$(sed 's/  */\n/g' <<<"$TAGS" | sort | xargs)" ]
 }
 
@@ -79,10 +80,15 @@ test_tox4 () {
   validate_tags "$PASS $NOINSTALL $NOTFOUND"
 
   # set env vars for tox.ini
-  export ENVS_PASSING="$(commasep "$PASS")"
-  export ENVS_NOINSTALL="$(commasep "$NOINSTALL")"
-  export ENVS_NOTFOUND="$(commasep "$NOTFOUND py20")"
-  export ALL_ENVS="$(commasep "$PASS $NOINSTALL $NOTFOUND py20")"
+  ENVS_PASSING="$(commasep "$PASS")"
+  ENVS_NOINSTALL="$(commasep "$NOINSTALL")"
+  ENVS_NOTFOUND="$(commasep "$NOTFOUND py20")"
+  ALL_ENVS="$(commasep "$PASS $NOINSTALL $NOTFOUND py20")"
+
+  export ENVS_PASSING
+  export ENVS_NOINSTALL
+  export ENVS_NOTFOUND
+  export ALL_ENVS
 
   # setup
   py_install "$HOST" "tox>=4,<5" "virtualenv$VENV"
@@ -148,11 +154,11 @@ test_venv () {
 
 main () {
   py uninstall --no-update-info 2>/dev/null || true
-  IFS= load_cases "$1" | while read CASE
+  IFS= load_cases "$1" | while read -r CASE
   do
     SUITE="$(cut -d: -f1 <<<"$CASE")"
     ARGS="$(case_bracex <<<"$CASE" | cut -d: -f2-)"
-    if test_$SUITE "$ARGS"; then
+    if "test_$SUITE" "$ARGS"; then
       printf 'PASS: %s [%s] %ss\n' "$1" "$CASE" "$SECONDS"
     else
       printf 'FAIL: %s [%s] %ss\n' "$1" "$CASE" "$SECONDS"
