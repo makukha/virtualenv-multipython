@@ -85,7 +85,7 @@ shell:
 # (proofread changelog)
 #
 # just build
-# just publish
+# just push-pypi
 #
 
 # bump project version (major|minor|patch)
@@ -105,7 +105,7 @@ changelog:
 
 # publish package on PyPI
 [group('release')]
-publish:
+push-pypi:
     rm -rf dist
     make pkg
     uv publish
