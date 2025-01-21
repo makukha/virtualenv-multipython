@@ -26,7 +26,7 @@ if DEBUG:
         from loguru import logger
     except ImportError:
         logging.basicConfig(level=logging.DEBUG)
-        logger = logging
+        logger = logging  # type: ignore
 
     debug = logger.debug
     exception = logger.exception
@@ -93,16 +93,14 @@ class MultiPython(Discover):  # type: ignore[misc]
         return info
 
     def get_tag_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
-        # get path
-        path = None
         try:
             # ruff: noqa: S603 = allow check_output with arbitrary cmdline
             # ruff: noqa: S607 = py is on path, specific location is not guaranteed
             out = check_output(['py', 'bin', '--path', tag])
             enc = sys.getfilesystemencoding()
             path = (out.decode() if enc is None else out.decode(enc)).strip()
+            return self.get_path_info(path)
         except Exception:
             if DEBUG:
                 exception('Failed to call "py bin --path {}"'.format(tag))
-        # get info
-        return self.get_path_info(path)
+        return None
