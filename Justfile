@@ -86,6 +86,7 @@ shell:
 #
 # just build
 # just push-pypi
+# (create github release)
 #
 
 # bump project version (major|minor|patch)
