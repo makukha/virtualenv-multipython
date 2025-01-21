@@ -57,11 +57,13 @@ debug = ["loguru; python_version>='3.5'"]
 dev = [
   "bump-my-version; python_version>='3.13'",
   "caseutil; python_version>='3.13'",
-  "docsub; python_version>='3.13'",
   "mypy; python_version>='3.13'",
   "rich; python_version>='3.13'",
   "ruff; python_version>='3.13'",
   "towncrier; python_version>='3.13'",
+  # docs
+  "bracex; python_version>='3.13'",
+  "docsub; python_version>='3.13'",
 ]
 
 [project.entry-points."virtualenv.discovery"]
