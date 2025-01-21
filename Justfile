@@ -9,13 +9,14 @@ sync:
 news type id *msg:
     #!/usr/bin/env bash
     set -euxo pipefail
-    if [ "$id" = "-" ]; then
+    if [ "{{id}}" = "-" ]; then
       id=`git rev-parse --abbrev-ref HEAD | cut -d- -f1`
+    else id="{{id}}"
     fi
-    if [ "$msg" = "" ]; then
+    if [ "{{msg}}" = "" ]; then
       msg=`git rev-parse --abbrev-ref HEAD | sed 's/^[0-9][0-9]*-//' | uv run caseutil -csentence`
     fi
-    uv run towncrier create -c "$msg" "$id.$type.md"
+    uv run towncrier create -c "{{msg}}" "$id.{{type}}.md"
 
 # run linters
 lint:

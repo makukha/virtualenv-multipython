@@ -1,4 +1,5 @@
 from __future__ import print_function
+import logging
 import os
 import re
 from subprocess import check_output
@@ -23,17 +24,12 @@ DEBUG = bool(os.environ.get('MULTIPYTHON_DEBUG', False))
 if DEBUG:
     try:
         from loguru import logger
-
-        debug = logger.debug
-        exception = logger.exception
-
     except ImportError:
+        logging.basicConfig(level=logging.DEBUG)
+        logger = logging
 
-        def debug(msg):  # type: ignore
-            print(msg, file=sys.stderr)
-
-        def exception(msg):  # type: ignore
-            print(msg, file=sys.stderr)
+    debug = logger.debug
+    exception = logger.exception
 
 
 RX = (
@@ -44,25 +40,27 @@ RX = (
 
 class MultiPython(Discover):  # type: ignore[misc]
     def __init__(self, options):  # type: (argparse.Namespace) -> None
-        super(MultiPython, self).__init__(options)
-        self.try_first_with = options.try_first_with
-        self.python = options.python
         if DEBUG:
-            debug('Created MultiPython with options: {}'.format(options.__dict__))
+            debug('Creating MultiPython with options: {}'.format(options.__dict__))
+        super(MultiPython, self).__init__(options)
+        self.requests = options.try_first_with + options.python
+        if not len(self.requests):
+            if sys.executable:
+                self.requests.append(sys.executable)
+                if DEBUG:
+                    debug('No versions requested, added sys.executable')
+            else:
+                if DEBUG:
+                    debug('No versions requested, and unable to get sys.executable')
+
 
     @classmethod
     def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
         Builtin.add_parser_arguments(parser)
 
     def run(self):  # type: () -> Union[PythonInfo, None]
-        requests = self.try_first_with + self.python
-        if not len(requests):
-            requests.append(sys.executable)
-            if DEBUG:
-                debug('No versions requested, adding sys.executable')
-
         ret = None
-        for python in requests:
+        for python in self.requests:
             if os.path.isabs(python) and os.path.exists(python):
                 if DEBUG:
                     debug('Candidate path: {}'.format(python))
@@ -81,26 +79,30 @@ class MultiPython(Discover):  # type: ignore[misc]
         return ret
 
     def get_path_info(self, path):  # type: (str) -> Union[PythonInfo, None]
-        try:
-            return PythonInfo.from_exe(path, resolve_to_host=False)
-        except Exception:
-            if DEBUG:
-                exception('Failed to get PythonInfo for path "{}"'.format(path))
-            return None
+        info = None
+        if path:
+            try:
+                info = PythonInfo.from_exe(path, resolve_to_host=False)
+                if info and not info.system_executable:
+                    info.system_executable = sys.executable
+                    if DEBUG:
+                        debug('Pinned system_executable: {}'.format(sys.executable))
+            except Exception:
+                if DEBUG:
+                    exception('Failed to get PythonInfo for path "{}"'.format(path))
+        return info
 
     def get_tag_info(self, tag):  # type: (str) -> Union[PythonInfo, None]
         # get path
+        path = None
         try:
             # ruff: noqa: S603 = allow check_output with arbitrary cmdline
             # ruff: noqa: S607 = py is on path, specific location is not guaranteed
             out = check_output(['py', 'bin', '--path', tag])
             enc = sys.getfilesystemencoding()
             path = (out.decode() if enc is None else out.decode(enc)).strip()
-            if not path:
-                return None
         except Exception:
             if DEBUG:
                 exception('Failed to call "py bin --path {}"'.format(tag))
-            return None
         # get info
         return self.get_path_info(path)
