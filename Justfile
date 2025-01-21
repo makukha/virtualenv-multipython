@@ -33,10 +33,16 @@ build:
 test *case:
     #!/usr/bin/env bash
     set -euo pipefail
+    # build package wheel
     just build
+    # build sample
     make samplepkg
+    # re-create pip cache volume
     docker volume rm -f "{{proj}}_pipcache" >/dev/null
+    docker compose run --rm --entrypoint /bin/true runtest
+    # close all containers if interrupted
     trap 'docker compose kill' SIGINT
+    # run tests
     if [ -n "{{case}}" ]; then
       docker compose run --rm -i runtest "{{case}}"
     else
