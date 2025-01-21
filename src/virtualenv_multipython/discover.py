@@ -53,7 +53,6 @@ class MultiPython(Discover):  # type: ignore[misc]
                 if DEBUG:
                     debug('No versions requested, and unable to get sys.executable')
 
-
     @classmethod
     def add_parser_arguments(cls, parser):  # type: (argparse.ArgumentParser) -> None
         Builtin.add_parser_arguments(parser)
