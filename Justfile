@@ -80,7 +80,7 @@ shell:
 # just test
 # just docs
 #
-# just version -- [patch|minor|major]
+# just version [patch|minor|major]
 # just changelog
 # (proofread changelog)
 #
